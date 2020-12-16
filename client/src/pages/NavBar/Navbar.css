@@ -1,0 +1,26 @@
+.header_link {
+  padding: 0px 20px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  background: transparent;
+  transition: 0.1s;
+}
+
+.header_link:hover {
+  padding: 0px 20px;
+  color: #e67e22;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  background: transparent;
+}
+
+.selected {
+  color: #e67e22;
+}
+
+.MainNav {
+  border-bottom: 4px solid #e67e22;
+}

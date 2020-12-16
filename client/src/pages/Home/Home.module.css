@@ -1,0 +1,28 @@
+.home {
+  position: absolute;
+  width: 1140px;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+header {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  background-attachment: fixed;
+}
+
+.text {
+  color: #fff;
+  font-size: 45pt;
+  line-height: 45pt;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+}
+
+.highlight {
+  color: #e67e22;
+}
