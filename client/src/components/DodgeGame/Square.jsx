@@ -13,4 +13,10 @@ const style = ({ size, position, color }) => {
   };
 };
 
-export default props => <div style={style(props)} />;
+const Square = (props) => {
+  return (
+    <div style={style(props)} />
+  )
+};
+
+export default Square;

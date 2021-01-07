@@ -9,6 +9,7 @@ import "./Navbar.css";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
 import Footer from "../Footer/Footer";
+import Game from "../../containers/Game"
 
 const getDimensions = ele => {
   const { height } = ele.getBoundingClientRect();
@@ -291,6 +292,7 @@ function NavBar() {
         <Contact />
       </div>
       <Footer />
+      <Game boardSize={11} playerSize={25} />
     </>
   );
 }
