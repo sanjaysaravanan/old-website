@@ -6,7 +6,7 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
-import Slider from "../Slider/AutoPlaySlider";
+import Stepper from "../Stepper/Stepper";
 
 const styles = theme => ({
   root: {
@@ -74,11 +74,14 @@ const useStyles = makeStyles(theme => ({
     }
   },
   sliderSection: {
-    height: "300px",
+    height: "500px",
     width: "100%",
     [theme.breakpoints.down("sm")]: {
-      height: "250px"
-    }
+      height: "450px",
+      width: "350px"
+    },
+    display: "flex",
+    justifyContent: "center"
   }
 }));
 
@@ -155,6 +158,7 @@ export default function CustomizedDialogs(props) {
       </div>
       <div className={classes.sectionDesktop}>
         <Dialog
+          fullScreen
           onClose={() => handleClose()}
           aria-labelledby="customized-dialog-title"
           open={open}
@@ -167,7 +171,7 @@ export default function CustomizedDialogs(props) {
           </DialogTitle>
           <DialogContent dividers>
             <div className={classes.sliderSection}>
-              <Slider slides={props.images} autoPlay={false} />
+              <Stepper tutorialSteps={props.images} autoPlay={false} />
             </div>
             <Typography variant="subtitle1">{props.description}</Typography>
           </DialogContent>
@@ -185,7 +189,7 @@ export default function CustomizedDialogs(props) {
           </DialogTitle>
           <DialogContent dividers>
             <div className={classes.sliderSection}>
-              <Slider slides={props.images} autoPlay={false} />
+              <Stepper tutorialSteps={props.images} autoPlay={false} />
             </div>
             <Typography variant="subtitle1">{props.description}</Typography>
           </DialogContent>
