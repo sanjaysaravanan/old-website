@@ -5,25 +5,15 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 600,
-    [theme.breakpoints.down("sm")]: {
-      maxWidth: 350
-    },
+    maxWidth: 700,
     flexGrow: 1
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    height: 50,
-    paddingLeft: theme.spacing(4),
-    backgroundColor: theme.palette.background.default
   },
   img: {
     height: 400,
-    width: "fit-content",
-    maxWidth: 600,
+    width: "auto",
     [theme.breakpoints.down("sm")]: {
-      maxWidth: 350
+      width: "100%",
+      height: 200
     },
     overflow: "hidden",
     display: "block"
@@ -45,13 +35,14 @@ const Stepper = ({ tutorialSteps }) => {
   };
 
   return (
-    <div className={classes.root}>
-      <img className={classes.img} src={tutorialSteps[activeStep]} />
+    <div>
+      <img className={classes.img} src={tutorialSteps[activeStep]} alt={activeStep} />
       <MobileStepper
         steps={maxSteps}
         position="static"
         variant="text"
         activeStep={activeStep}
+        // style={{ backgroundColor: "#d9d9d9" }}
         nextButton={
           <Button
             size="small"
@@ -62,8 +53,8 @@ const Stepper = ({ tutorialSteps }) => {
             {theme.direction === "rtl" ? (
               <KeyboardArrowLeft />
             ) : (
-              <KeyboardArrowRight />
-            )}
+                <KeyboardArrowRight />
+              )}
           </Button>
         }
         backButton={
@@ -71,8 +62,8 @@ const Stepper = ({ tutorialSteps }) => {
             {theme.direction === "rtl" ? (
               <KeyboardArrowRight />
             ) : (
-              <KeyboardArrowLeft />
-            )}
+                <KeyboardArrowLeft />
+              )}
             Back
           </Button>
         }

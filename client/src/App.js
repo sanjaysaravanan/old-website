@@ -23,7 +23,7 @@ const theme = createMuiTheme({
       dark: "#F4F4F4",
       light: "#616161"
     },
-    background: { default: "#f9fafb" }
+    background: { default: "#f9fafb", main: "#d9d9d9" }
   },
   typography: {
     fontFamily: ['"Segoe UI"'].join(",")

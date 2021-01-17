@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
-// import axios from 'axios';
-// { GameInfo, Board, Player, Enemy, DebugState } 
-import GameInfo from '../components/DodgeGame/GameInfo';
-import Board from "../components/DodgeGame/Board";
-import Player from "../components/DodgeGame/Player";
-import Enemy from "../components/DodgeGame/Enemy";
-import DebugState from "../components/DodgeGame/DebugState";
-import { UP, DOWN, LEFT, RIGHT } from '../helpers/constants';
-import { pluck } from '../helpers/utils';
+import GameInfo from './Components/GameInfo';
+import Board from "./Components/Board";
+import Player from "./Components/Player";
+import Enemy from "./Components/Enemy";
+import DebugState from "./Components/DebugState";
+import { UP, DOWN, LEFT, RIGHT } from '../../../helpers/constants';
+import { pluck } from '../../../helpers/utils';
 
-/*
-    Since my api key is not publicly available,
-    cloned versions will lack the ability to post
-    new high scores.
-*/
-// import url from 'api';
 
 const getDefaultState = ({ boardSize, playerSize, highScore = 0 }) => {
     const half = Math.floor(boardSize / 2) * playerSize;
@@ -48,7 +40,7 @@ export default class Game extends Component {
         const { boardSize, playerSize } = props;
         this.state = getDefaultState({ boardSize, playerSize })
     }
-    
+
     placeEnemy = () => {
         // enemies always launch at player
         const { player, maxDim } = this.state.size;
@@ -77,7 +69,7 @@ export default class Game extends Component {
         const newEnemy = { key: this.state.enemyIndex, dir: side };
         const { maxDim, player } = this.state.size;
 
-        switch(side) {
+        switch (side) {
             case UP:
                 newEnemy.top = maxDim;
                 newEnemy.left = position.left;
@@ -85,7 +77,7 @@ export default class Game extends Component {
             case DOWN:
                 newEnemy.top = 0 - player;
                 newEnemy.left = position.left;
-                break; 
+                break;
             case LEFT:
                 newEnemy.top = position.top;
                 newEnemy.left = maxDim;
@@ -102,7 +94,7 @@ export default class Game extends Component {
     handlePlayerMovement = (dirObj) => {
         const { top, left } = this.state.positions.player;
         const { player, maxDim } = this.state.size;
-        
+
         // check walls
         switch (dirObj.dir) {
             case UP:
@@ -118,7 +110,7 @@ export default class Game extends Component {
                 if (left === maxDim - player) return;
                 break;
         }
-        
+
         this.setState({
             positions: {
                 ...this.state.positions,
@@ -160,26 +152,26 @@ export default class Game extends Component {
     }
 
     updateEnemyPositions = () => {
-        const { enemySpeed, positions: { enemies }, size: { player, maxDim }} = this.state;
+        const { enemySpeed, positions: { enemies }, size: { player, maxDim } } = this.state;
 
         this.setState({
             positions: {
                 ...this.state.positions,
                 enemies: enemies.filter(enemy => !enemy.remove).map(enemy => {
-                    if (enemy.top < (0 - player) || 
-                        enemy.top > maxDim + player || 
-                        enemy.left < (0 - player) || 
-                        enemy.left > maxDim + player ) {
+                    if (enemy.top < (0 - player) ||
+                        enemy.top > maxDim + player ||
+                        enemy.left < (0 - player) ||
+                        enemy.left > maxDim + player) {
                         enemy.remove = true;
                         return enemy;
                     }
 
                     // based on direction, increment the correct value (top / left)
-                    switch(enemy.dir) {
-                        case UP: 
+                    switch (enemy.dir) {
+                        case UP:
                             enemy.top -= enemySpeed;
                             break;
-                        case DOWN: 
+                        case DOWN:
                             enemy.top += enemySpeed;
                             break;
                         case LEFT:
@@ -231,9 +223,9 @@ export default class Game extends Component {
     resetGame = () => {
         const { boardSize, playerSize } = this.props;
         const { playerScore, highScore, globalHighScore, debug } = this.state;
-        
+
         // clear intervals
-        clearInterval(this.gameInterval); 
+        clearInterval(this.gameInterval);
         clearInterval(this.enemyInterval);
         clearInterval(this.timeInterval);
 
@@ -292,10 +284,10 @@ export default class Game extends Component {
             margin: '0 auto'
         };
     }
-    
+
     render() {
-        const { 
-            size: { board, player }, 
+        const {
+            size: { board, player },
             positions: { player: playerPos },
             playerScore,
             timeElapsed,
@@ -305,20 +297,20 @@ export default class Game extends Component {
 
         return (
             <div style={this.style()}>
-                <GameInfo 
-                    playerScore={playerScore} 
+                <GameInfo
+                    playerScore={playerScore}
                     timeElapsed={timeElapsed}
                     highScore={highScore}
                     globalHighScore={globalHighScore} />
 
                 <Board dimension={board * player}>
-                    <Player 
-                        size={player} 
+                    <Player
+                        size={player}
                         position={playerPos}
                         handlePlayerMovement={this.handlePlayerMovement} />
 
                     {
-                        this.state.positions.enemies.map(enemy => 
+                        this.state.positions.enemies.map(enemy =>
                             <Enemy key={enemy.key}
                                 size={player}
                                 info={enemy}
@@ -327,12 +319,12 @@ export default class Game extends Component {
                         )
                     }
                 </Board>
-                {false && <p style={{ position: 'fixed', bottom: 0, left: 16 }}>Debug: <input type="checkbox" onChange={this.handleDebugToggle} ref={ n => this.debug = n }/></p>}
+                {false && <p style={{ position: 'fixed', bottom: 0, left: 16 }}>Debug: <input type="checkbox" onChange={this.handleDebugToggle} ref={n => this.debug = n} /></p>}
                 {this.state.debug && <DebugState data={this.state} />}
             </div>
         )
     }
-    
+
     componentDidMount() {
         this.startGame();
         this.fetchGlobalHighScore();
