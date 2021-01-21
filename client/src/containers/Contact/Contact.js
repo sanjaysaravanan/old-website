@@ -6,7 +6,6 @@ const useStyles = makeStyles(theme => ({
     height: "100%",
     width: "100%",
     transition: ".3s",
-    backgroundColor: theme.palette.secondary.dark,
     paddingTop: 100
   },
   typoDiv: {

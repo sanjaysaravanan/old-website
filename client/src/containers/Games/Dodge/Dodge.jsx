@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import GameInfo from './Components/GameInfo';
 import Board from "./Components/Board";
 import Player from "./Components/Player";
@@ -33,41 +33,43 @@ const getDefaultState = ({ boardSize, playerSize, highScore = 0 }) => {
     }
 };
 
-export default class Game extends Component {
-    constructor(props) {
-        super(props);
-        const half = Math.floor(props.boardSize / 2) * props.playerSize;
-        const { boardSize, playerSize } = props;
-        this.state = getDefaultState({ boardSize, playerSize })
-    }
+const Game = (props) => {
+    // const half = Math.floor(props.boardSize / 2) * props.playerSize;
+    const { boardSize, playerSize } = props;
+    const [state, setState] = useState(getDefaultState({ boardSize, playerSize }))
+    const [enemyIntervalId, setIntervalEnemy] = useState();
+    const [timeIntervalId, setIntervalTime] = useState();
+    const [gameIntervalId, setIntervalGame] = useState();
 
-    placeEnemy = () => {
+    const placeEnemy = () => {
         // enemies always launch at player
-        const { player, maxDim } = this.state.size;
-        const { player: playerPos } = this.state.positions;
+        const { player, maxDim } = state.size;
+        const { player: playerPos } = state.positions;
 
         // assign to a random side
         const side = pluck([UP, DOWN, LEFT, RIGHT]);
 
         // generate enemy object
-        const newEnemy = this.generateNewEnemy(playerPos, side);
+        const newEnemy = generateNewEnemy(playerPos, side);
 
         // add new enemy to state
-        this.setState({
+        setState({
+            ...state,
             positions: {
-                ...this.state.positions,
-                enemies: [...this.state.positions.enemies].concat(newEnemy)
+                ...state.positions,
+                enemies: [...state.positions.enemies].concat(newEnemy)
             }
         });
     }
 
-    generateNewEnemy = (position, side) => {
-        this.setState({
-            enemyIndex: this.state.enemyIndex + 1
+    const generateNewEnemy = (position, side) => {
+        setState({
+            ...state,
+            enemyIndex: state.enemyIndex + 1
         });
 
-        const newEnemy = { key: this.state.enemyIndex, dir: side };
-        const { maxDim, player } = this.state.size;
+        const newEnemy = { key: state.enemyIndex, dir: side };
+        const { maxDim, player } = state.size;
 
         switch (side) {
             case UP:
@@ -91,9 +93,9 @@ export default class Game extends Component {
         return newEnemy;
     }
 
-    handlePlayerMovement = (dirObj) => {
-        const { top, left } = this.state.positions.player;
-        const { player, maxDim } = this.state.size;
+    const handlePlayerMovement = (dirObj) => {
+        const { top, left } = state.positions.player;
+        const { player, maxDim } = state.size;
 
         // check walls
         switch (dirObj.dir) {
@@ -111,9 +113,10 @@ export default class Game extends Component {
                 break;
         }
 
-        this.setState({
+        setState({
+            ...state,
             positions: {
-                ...this.state.positions,
+                ...state.positions,
                 player: {
                     top: top + (player * dirObj.top),
                     left: left + (player * dirObj.left)
@@ -122,41 +125,55 @@ export default class Game extends Component {
         });
     }
 
-    handlePlayerCollision = () => {
-        this.resetGame();
+    const handlePlayerCollision = () => {
+        resetGame();
     }
 
-    startGame = () => {
-        this.enemyInterval = setInterval(this.updateEnemyPositions, 50);
-        this.timeInterval = setInterval(this.updateGame, 1000);
-        this.gameInterval = setInterval(this.updateEnemiesInPlay, 250);
+    const startGame = () => {
+        const enemyInterval = setInterval(updateEnemyPositions, 50);
+        setIntervalEnemy(enemyInterval);
+        const timeInterval = setInterval(updateGame, 1000);
+        setIntervalTime(timeInterval)
+        const gameInterval = setInterval(updateEnemiesInPlay, 250);
+        setIntervalGame(gameInterval);
     }
 
-    updateGame = () => {
-        const { timeElapsed } = this.state;
+    useEffect(() => {
+        startGame();
+        // fetchGlobalHighScore();
+        return () => {
+            clearInterval(gameIntervalId);
+            clearInterval(enemyIntervalId);
+            clearInterval(timeIntervalId);
+        }
+    }, []);
 
-        this.updateTimeAndScore();
+    const updateGame = () => {
+        const { timeElapsed } = state;
+
+        updateTimeAndScore();
 
         if (timeElapsed > 0) {
 
             // increment enemy speed
             if (timeElapsed % 3 === 0) {
-                this.incrementEnemySpeed();
+                incrementEnemySpeed();
             }
 
             // increment max active enemies every 10 seconds
             if (timeElapsed % 10 === 0) {
-                this.incrementActiveEnemies();
+                incrementActiveEnemies();
             }
         }
     }
 
-    updateEnemyPositions = () => {
-        const { enemySpeed, positions: { enemies }, size: { player, maxDim } } = this.state;
+    const updateEnemyPositions = () => {
+        const { enemySpeed, positions: { enemies }, size: { player, maxDim } } = state;
 
-        this.setState({
+        setState({
+            ...state,
             positions: {
-                ...this.state.positions,
+                ...state.positions,
                 enemies: enemies.filter(enemy => !enemy.remove).map(enemy => {
                     if (enemy.top < (0 - player) ||
                         enemy.top > maxDim + player ||
@@ -188,72 +205,72 @@ export default class Game extends Component {
         });
     }
 
-    updateEnemiesInPlay = () => {
-        const { activeEnemies } = this.state;
-        const { enemies } = this.state.positions;
+    const updateEnemiesInPlay = () => {
+        const { activeEnemies } = state;
+        const { enemies } = state.positions;
 
         if (enemies.length < activeEnemies) {
-            this.placeEnemy();
+            placeEnemy();
         }
     }
 
-    updateTimeAndScore = () => {
-        const { timeElapsed, playerScore, baseScore } = this.state;
+    const updateTimeAndScore = () => {
+        const { timeElapsed, playerScore, baseScore } = state;
 
-        this.setState({
+        setState({
+            ...state,
             timeElapsed: timeElapsed + 1,
             playerScore: playerScore + baseScore,
         });
     }
 
-    incrementEnemySpeed = () => {
-        const { enemySpeed } = this.state;
+    const incrementEnemySpeed = () => {
+        const { enemySpeed } = state;
 
-        this.setState({
+        setState({
+            ...state,
             enemySpeed: parseFloat((enemySpeed + 0.25).toFixed(2))
         });
     }
 
-    incrementActiveEnemies = () => {
-        this.setState({
-            activeEnemies: this.state.activeEnemies + 1
+    const incrementActiveEnemies = () => {
+        setState({
+            ...state,
+            activeEnemies: state.activeEnemies + 1
         });
     }
 
-    resetGame = () => {
-        const { boardSize, playerSize } = this.props;
-        const { playerScore, highScore, globalHighScore, debug } = this.state;
+    const resetGame = () => {
+        const { boardSize, playerSize } = props;
+        const { playerScore, highScore, globalHighScore } = state;
 
         // clear intervals
-        clearInterval(this.gameInterval);
-        clearInterval(this.enemyInterval);
-        clearInterval(this.timeInterval);
+        clearInterval(gameIntervalId);
+        clearInterval(enemyIntervalId);
+        clearInterval(timeIntervalId);
 
         // if high score is higher than global high score, update it
         if (playerScore > globalHighScore) {
-            this.updateGlobalHighScore(playerScore);
+            updateGlobalHighScore(playerScore);
         }
 
         // reset state
-        this.setState({
+        setState({
             ...getDefaultState({ boardSize, playerSize, highScore }),
             // persist debug state and high scores
-            debug,
             highScore: playerScore > highScore ? playerScore : highScore,
             globalHighScore
         });
         // restart game
-        this.startGame();
-
+        startGame();
     }
 
-    handleDebugToggle = () => {
-        this.setState({
-            debug: this.debug.checked
-        });
-    }
+    // const handleDebugToggle = () => {
+    //     setState({
+    //         debug: debug.checked
+    //     });
 
-    fetchGlobalHighScore = () => {
+    const fetchGlobalHighScore = () => {
         // axios.get(url)
         //     .then(data => {
         //         this.setState({
@@ -263,7 +280,7 @@ export default class Game extends Component {
         //     .catch(err => console.warn(err))
     }
 
-    updateGlobalHighScore = (highScore) => {
+    const updateGlobalHighScore = (highScore) => {
         // axios.patch(url, {
         //     "fields": {
         //         "global_high_score": highScore
@@ -277,7 +294,7 @@ export default class Game extends Component {
         // .catch(err => console.warn(err))
     }
 
-    style = () => {
+    const style = () => {
         return {
             width: '85%',
             maxWidth: '600px',
@@ -285,54 +302,44 @@ export default class Game extends Component {
         };
     }
 
-    render() {
-        const {
-            size: { board, player },
-            positions: { player: playerPos },
-            playerScore,
-            timeElapsed,
-            highScore,
-            globalHighScore
-        } = this.state;
+    const {
+        size: { board, player },
+        positions: { player: playerPos },
+        playerScore,
+        timeElapsed,
+        highScore,
+        globalHighScore
+    } = state;
 
-        return (
-            <div style={this.style()}>
-                <GameInfo
-                    playerScore={playerScore}
-                    timeElapsed={timeElapsed}
-                    highScore={highScore}
-                    globalHighScore={globalHighScore} />
+    return (
+        <div style={style()}>
+            <GameInfo
+                playerScore={playerScore}
+                timeElapsed={timeElapsed}
+                highScore={highScore}
+                globalHighScore={globalHighScore}
+            />
+            <Board dimension={board * player}>
+                <Player
+                    size={player}
+                    position={playerPos}
+                    handlePlayerMovement={handlePlayerMovement} />
 
-                <Board dimension={board * player}>
-                    <Player
-                        size={player}
-                        position={playerPos}
-                        handlePlayerMovement={this.handlePlayerMovement} />
-
-                    {
-                        this.state.positions.enemies.map(enemy =>
-                            <Enemy key={enemy.key}
-                                size={player}
-                                info={enemy}
-                                playerPosition={playerPos}
-                                onCollide={this.handlePlayerCollision} />
-                        )
-                    }
-                </Board>
-                {false && <p style={{ position: 'fixed', bottom: 0, left: 16 }}>Debug: <input type="checkbox" onChange={this.handleDebugToggle} ref={n => this.debug = n} /></p>}
-                {this.state.debug && <DebugState data={this.state} />}
-            </div>
-        )
-    }
-
-    componentDidMount() {
-        this.startGame();
-        this.fetchGlobalHighScore();
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.state.gameInterval);
-        clearInterval(this.state.enemyInterval);
-        clearInterval(this.state.timeInterval);
-    }
+                {
+                    state.positions.enemies.map(enemy =>
+                        <Enemy key={enemy.key}
+                            size={player}
+                            info={enemy}
+                            playerPosition={playerPos}
+                            onCollide={handlePlayerCollision}
+                        />
+                    )
+                }
+            </Board>
+            {/* {false && <p style={{ position: 'fixed', bottom: 0, left: 16 }}>Debug: <input type="checkbox" onChange={handleDebugToggle} ref={n => debug = n} /></p>} */}
+            {/* {state.debug && <DebugState data={state} />} */}
+        </div>
+    )
 }
+
+export default Game;

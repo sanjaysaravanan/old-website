@@ -1,30 +1,32 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from "prop-types";
 import Square from './Square';
 
-class Enemy extends Component {
-    componentDidUpdate() {
-        const { size, playerPosition, info: { top, left }} = this.props;
-        
-        if ( playerPosition.left < (left + size) && 
-             playerPosition.top  < (top + size)  &&
-            (playerPosition.left + size) > left &&
-            (playerPosition.top  + size) > top) {
-            
-            this.props.onCollide()
-        }
-    }
+const Enemy = (props) => {
+    useEffect(() => {
+        const { size, playerPosition, info: { top, left } } = props;
 
-    render() {
-        const { size, info: { top, left }} = this.props;
-        
-        return (
-            <Square 
-                size={size}
-                position={{ top, left }}
-                color='firebrick' />
-        );
-    }
+        if (playerPosition.left < (left + size) &&
+            playerPosition.top < (top + size) &&
+            (playerPosition.left + size) > left &&
+            (playerPosition.top + size) > top) {
+
+            props.onCollide()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => {
+
+        }
+    })
+
+    const { size, info: { top, left } } = props;
+    return (
+        <Square
+            size={size}
+            position={{ top, left }}
+            color='firebrick'
+        />
+    );
 }
 
 Enemy.propTypes = {

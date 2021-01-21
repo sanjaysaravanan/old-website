@@ -1,21 +1,26 @@
-import React, { Component} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from "prop-types";
 import Square from './Square';
-import { UP, DOWN, LEFT, RIGHT } from '../../helpers/constants';
+import { UP, DOWN, LEFT, RIGHT } from '../helpers/constants';
 
-class Player extends Component {    
-    handleKeyDown = (e) => {
+const Player = (props) => {
+    let player = null;
+    useEffect(() => {
+        window.onkeydown = handleKeyDown;
+    });
+
+    const handleKeyDown = (e) => {
         let newDirection;
-        
-        switch(e.keyCode) {
+
+        switch (e.keyCode) {
             case 37:
-                newDirection = { top: 0, left: -1 , dir: LEFT};
+                newDirection = { top: 0, left: -1, dir: LEFT };
                 break;
             case 38:
-                newDirection = { top: -1, left: 0 , dir: UP};
+                newDirection = { top: -1, left: 0, dir: UP };
                 break;
             case 39:
-                newDirection = { top: 0, left: 1, dir: RIGHT};
+                newDirection = { top: 0, left: 1, dir: RIGHT };
                 break;
             case 40:
                 newDirection = { top: 1, left: 0, dir: DOWN };
@@ -24,26 +29,20 @@ class Player extends Component {
                 return;
         }
 
-        this.props.handlePlayerMovement(newDirection);
+        props.handlePlayerMovement(newDirection);
     }
-    
-    render() {        
-        const { size, position: { top, left }} = this.props;
-        
-        return (
-            <div ref={ n => { this.player = n }} >
-                <Square 
-                    size={size}
-                    position={{ top, left }}
-                    color='darkgray' />
-            </div>
-            
-        );
-    }
-    
-    componentDidMount() {
-        window.onkeydown = this.handleKeyDown;
-    }
+
+    const { size, position: { top, left } } = props;
+    return (
+        <div ref={n => { player = n }} >
+            <Square
+                size={size}
+                position={{ top, left }}
+                color='blue'
+            />
+        </div>
+
+    );
 }
 
 Player.propTypes = {
