@@ -4,6 +4,7 @@ import Square from './Square';
 import { UP, DOWN, LEFT, RIGHT } from '../helpers/constants';
 
 const Player = (props) => {
+    // eslint-disable-next-line no-unused-vars
     let player = null;
     useEffect(() => {
         window.onkeydown = handleKeyDown;

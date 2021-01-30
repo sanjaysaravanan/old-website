@@ -19,14 +19,13 @@ const Enemy = props => {
       props.onCollide();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => {};
+    return () => { };
   });
 
   const {
     size,
     info: { top, left }
   } = props;
-  console.log(props);
   return <Square size={size} position={{ top, left }} color="firebrick" />;
 };
 

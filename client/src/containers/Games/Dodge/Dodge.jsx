@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import GameInfo from "./Components/GameInfo";
 import Board from "./Components/Board";
 import Player from "./Components/Player";
 import Enemy from "./Components/Enemy";
-import DebugState from "./Components/DebugState";
 import { UP, DOWN, LEFT, RIGHT } from "../../../helpers/constants";
 import { pluck } from "../../../helpers/utils";
 import { makeStyles } from "@material-ui/core";
@@ -15,26 +14,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const getDefaultState = ({ boardSize, playerSize, highScore = 0 }) => {
-  const half = Math.floor(boardSize / 2) * playerSize;
+const getDefaultState = ({ highScore = 0 }) => {
   return {
-    size: {
-      board: boardSize,
-      player: playerSize,
-      maxDim: boardSize * playerSize
-    },
-    positions: {
-      player: {
-        top: half,
-        left: half
-      },
-      enemies: []
-    },
     playerScore: 0,
     highScore,
-    timeElapsed: 0,
     enemySpeed: 5,
-    enemyIndex: 0,
     activeEnemies: 1,
     baseScore: 10
   };
@@ -48,7 +32,14 @@ const Dodge = props => {
     top: half,
     left: half
   });
-  //   const [enemies, set] useState([]);
+  const [enemies, setEnemies] = useState([]);
+  const [enemyIndex, setEnemyIndex] = useState(0);
+  const [size, setSize] = useState({
+    board: boardSize,
+    player: playerSize,
+    maxDim: boardSize * playerSize
+  });
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [state, setState] = useState(
     getDefaultState({ boardSize, playerSize })
   );
@@ -57,36 +48,22 @@ const Dodge = props => {
   const [gameIntervalId, setIntervalGame] = useState();
 
   const placeEnemy = () => {
-    // enemies always launch at player
-    const { player, maxDim } = state.size;
-
     // assign to a random side
     const side = pluck([UP, DOWN, LEFT, RIGHT]);
 
     // generate enemy object
     const newEnemy = generateNewEnemy(playerPos, side);
 
-    console.log(newEnemy);
-
     // add new enemy to state
-    setState({
-      ...state,
-      positions: {
-        ...state.positions,
-        enemies: [...state.positions.enemies].concat(newEnemy)
-      }
-    });
+    setEnemies(enemies.concat(newEnemy));
   };
 
   const generateNewEnemy = (position, side) => {
-    setState({
-      ...state,
-      enemyIndex: state.enemyIndex + 1
-    });
+    setEnemyIndex(enemyIndex + 1);
 
-    const newEnemy = { key: state.enemyIndex, dir: side };
-    const { maxDim, player } = state.size;
-
+    const newEnemy = { key: enemyIndex + 1, dir: side };
+    const { maxDim, player } = size;
+    // eslint-disable-next-line default-case
     switch (side) {
       case UP:
         newEnemy.top = maxDim;
@@ -108,12 +85,12 @@ const Dodge = props => {
 
     return newEnemy;
   };
-
   const handlePlayerMovement = dirObj => {
     const { top, left } = playerPos;
-    const { player, maxDim } = state.size;
+    const { player, maxDim } = size;
 
     // check walls
+    // eslint-disable-next-line default-case
     switch (dirObj.dir) {
       case UP:
         if (top === 0) return;
@@ -140,55 +117,50 @@ const Dodge = props => {
 
   const updateEnemyPositions = () => {
     const {
-      enemySpeed,
-      positions: { enemies },
-      size: { player, maxDim }
+      enemySpeed
     } = state;
-    setState({
-      ...state,
-      positions: {
-        player: { ...state.positions.player },
-        enemies: enemies
-          .filter(enemy => !enemy.remove)
-          .map(enemy => {
-            if (
-              enemy.top < 0 - player ||
-              enemy.top > maxDim + player ||
-              enemy.left < 0 - player ||
-              enemy.left > maxDim + player
-            ) {
-              enemy.remove = true;
-              return enemy;
-            }
-            // based on direction, increment the correct value (top / left)
-            switch (enemy.dir) {
-              case UP:
-                enemy.top -= enemySpeed;
-                break;
-              case DOWN:
-                enemy.top += enemySpeed;
-                break;
-              case LEFT:
-                enemy.left -= enemySpeed;
-                break;
-              case RIGHT:
-                enemy.left += enemySpeed;
-                break;
-            }
-            return enemy;
-          })
-      }
-    });
+
+    const { player, maxDim } = size;
+    setEnemies(enemies
+      .filter(enemy => !enemy.remove)
+      .map(enemy => {
+        if (
+          enemy.top < 0 - player ||
+          enemy.top > maxDim + player ||
+          enemy.left < 0 - player ||
+          enemy.left > maxDim + player
+        ) {
+          enemy.remove = true;
+          return enemy;
+        }
+        // based on direction, increment the correct value (top / left)
+        // eslint-disable-next-line default-case
+        switch (enemy.dir) {
+          case UP:
+            enemy.top -= enemySpeed;
+            break;
+          case DOWN:
+            enemy.top += enemySpeed;
+            break;
+          case LEFT:
+            enemy.left -= enemySpeed;
+            break;
+          case RIGHT:
+            enemy.left += enemySpeed;
+            break;
+        }
+        return enemy;
+      }));
   };
 
   const updateTimeAndScore = () => {
-    const { timeElapsed, playerScore, baseScore } = state;
+    const { playerScore, baseScore } = state;
 
     setState({
       ...state,
-      timeElapsed: timeElapsed + 1,
       playerScore: playerScore + baseScore
     });
+    setTimeElapsed(timeElapsed + 1);
   };
 
   const incrementEnemySpeed = () => {
@@ -202,16 +174,14 @@ const Dodge = props => {
 
   const updateGame = () => {
     updateTimeAndScore();
-    console.log("#################");
-    console.log(state.timeElapsed);
-    if (state.timeElapsed > 0) {
+    if (timeElapsed > 0) {
       // increment enemy speed
-      if (state.timeElapsed % 3 === 0) {
+      if (timeElapsed % 3 === 0) {
         incrementEnemySpeed();
       }
 
       // increment max active enemies every 10 seconds
-      if (state.timeElapsed % 10 === 0) {
+      if (timeElapsed % 10 === 0) {
         incrementActiveEnemies();
       }
     }
@@ -219,21 +189,44 @@ const Dodge = props => {
 
   const updateEnemiesInPlay = () => {
     const { activeEnemies } = state;
-    const { enemies } = state.positions;
-    console.log("Placing Enemy");
     if (enemies.length < activeEnemies) {
       placeEnemy();
     }
   };
 
+  const updateEnemyPosRef = useRef();
+  const updateGameRef = useRef();
+  const updateEnemiesInPlayRef = useRef();
+
+  useEffect(() => {
+    updateEnemyPosRef.current = updateEnemyPositions;
+    updateGameRef.current = updateGame;
+    updateEnemiesInPlayRef.current = updateEnemiesInPlay;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => { };
+  });
+
+  const updateEnemyPosRefMethod = () => {
+    updateEnemyPosRef.current()
+  }
+
+  const updateGameRefMethod = () => {
+    updateGameRef.current()
+  }
+
+  const updateEnemiesInPlayRefMethod = () => {
+    updateEnemiesInPlayRef.current()
+  }
+
   const startGame = () => {
-    // let enemyInterval = setInterval(updateEnemyPositions, true * 50);
-    // setIntervalEnemy(enemyInterval);
-    let timeInterval = setInterval(updateGame, true * 1000);
+    let enemyInterval = setInterval(updateEnemyPosRefMethod, true * 50);
+    setIntervalEnemy(enemyInterval);
+    let timeInterval = setInterval(updateGameRefMethod, true * 1000);
     setIntervalTime(timeInterval);
-    // let gameInterval = setInterval(updateEnemiesInPlay, true * 250);
-    // setIntervalGame(gameInterval);
+    let gameInterval = setInterval(updateEnemiesInPlayRefMethod, true * 250);
+    setIntervalGame(gameInterval);
   };
+
 
   useEffect(() => {
     startGame();
@@ -243,6 +236,7 @@ const Dodge = props => {
       clearInterval(enemyIntervalId);
       clearInterval(timeIntervalId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const incrementActiveEnemies = () => {
@@ -261,6 +255,18 @@ const Dodge = props => {
     clearInterval(enemyIntervalId);
     clearInterval(timeIntervalId);
 
+    setPlayerPos({
+      top: half,
+      left: half
+    });
+    setEnemies([]);
+    setEnemyIndex(0);
+    setSize({
+      board: boardSize,
+      player: playerSize,
+      maxDim: boardSize * playerSize
+    });
+    setTimeElapsed(0);
     // reset state
     setState({
       ...getDefaultState({ boardSize, playerSize, highScore }),
@@ -276,21 +282,20 @@ const Dodge = props => {
     <div className={classes.root}>
       <GameInfo
         playerScore={state.playerScore}
-        timeElapsed={state.timeElapsed}
+        timeElapsed={timeElapsed}
         highScore={state.highScore}
         globalHighScore={state.globalHighScore}
       />
-      <Board dimension={state.size.board * state.size.player}>
+      <Board dimension={size.board * size.player}>
         <Player
-          size={state.size.player}
+          size={size.player}
           position={playerPos}
           handlePlayerMovement={handlePlayerMovement}
         />
-
-        {state.positions.enemies.map(enemy => (
+        {enemies.map(enemy => (
           <Enemy
             key={enemy.key}
-            size={state.size.player}
+            size={size.player}
             info={enemy}
             playerPosition={playerPos}
             onCollide={handlePlayerCollision}
