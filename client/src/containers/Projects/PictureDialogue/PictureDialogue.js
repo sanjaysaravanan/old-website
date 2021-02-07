@@ -1,25 +1,8 @@
 import React from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
-import Slider from "../Slider/AutoPlaySlider";
+import { makeStyles, Dialog, IconButton, Typography, Box, Divider } from "@material-ui/core";
+import Stepper from "../Stepper/Stepper";
+import { Close } from "@material-ui/icons";
 
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2)
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  }
-});
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -69,42 +52,30 @@ const useStyles = makeStyles(theme => ({
   },
   sectionMobile: {
     display: "block",
+    width: "100%",
+    maxWidth: "100%",
     [theme.breakpoints.up("md")]: {
       display: "none"
-    }
+    },
+    minWidth: "fit-content"
   },
   sliderSection: {
-    height: "300px",
-    width: "100%",
+    width: "auto",
     [theme.breakpoints.down("sm")]: {
-      height: "250px"
-    }
+      width: "auto"
+    },
+    display: "flex",
+    justifyContent: "center"
+  },
+  customMaxWidth: {
+    maxWidth: "none",
+    height: "fit-content",
+    maxHeight: 640
   }
 }));
 
-const DialogTitle = withStyles(styles)(props => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
 
-const DialogContent = withStyles(theme => ({
-  root: {
-    padding: theme.spacing(1)
-  }
-}))(MuiDialogContent);
+
 
 export default function CustomizedDialogs(props) {
   const classes = useStyles();
@@ -158,19 +129,29 @@ export default function CustomizedDialogs(props) {
           onClose={() => handleClose()}
           aria-labelledby="customized-dialog-title"
           open={open}
+          classes={{ paperScrollPaper: classes.customMaxWidth }}
         >
-          <DialogTitle
-            id="customized-dialog-title"
-            onClose={() => handleClose()}
-          >
-            {props.name}
-          </DialogTitle>
-          <DialogContent dividers>
-            <div className={classes.sliderSection}>
-              <Slider slides={props.images} autoPlay={false} />
-            </div>
-            <Typography variant="subtitle1">{props.description}</Typography>
-          </DialogContent>
+          <div className={classes.sliderSection}>
+            <Stepper tutorialSteps={props.images} autoPlay={false} />
+          </div>
+          <Box pl={3} pr={3} width={"90%"}>
+            <Box mb={1}>
+              <Typography variant="h6" >{props.name}</Typography>
+            </Box>
+            <Divider />
+            <Box mt={1}>
+              <Typography variant="subtitle1">{props.description}</Typography>
+            </Box>
+          </Box>
+          <Box display="flex" p={2} justifyContent="flex-end" alignItems="center">
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={handleClose}
+            >
+              <Close />
+            </IconButton>
+          </Box>
         </Dialog>
       </div>
       <div className={classes.sectionMobile}>
@@ -180,17 +161,12 @@ export default function CustomizedDialogs(props) {
           aria-labelledby="customized-dialog-title"
           open={openMobile}
         >
-          <DialogTitle id="customized-dialog-title" onClose={handleMobileClose}>
-            {props.name}
-          </DialogTitle>
-          <DialogContent dividers>
-            <div className={classes.sliderSection}>
-              <Slider slides={props.images} autoPlay={false} />
-            </div>
-            <Typography variant="subtitle1">{props.description}</Typography>
-          </DialogContent>
+          <div className={classes.sliderSection}>
+            <Stepper tutorialSteps={props.images} autoPlay={false} />
+          </div>
+          <Typography variant="subtitle1">{props.description}</Typography>
         </Dialog>
       </div>
-    </div>
+    </div >
   );
 }

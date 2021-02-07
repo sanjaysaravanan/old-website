@@ -5,7 +5,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
     transition: ".3s",
-    backgroundColor: theme.palette.secondary.dark,
     paddingTop: 100
   }
 }));

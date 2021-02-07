@@ -1,15 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import { makeStyles, AppBar, Toolbar, Typography } from "@material-ui/core";
-import Home from "../Home/Home";
-import About from "../About/About";
-import Projects from "../Projects/Projects";
-import Blog from "../Blog/Blog";
-import Contact from "../Contact/Contact";
+import { Menu, Close } from "@material-ui/icons";
+import Home from "../../containers/Home/Home";
+import About from "../../containers/About/About";
+import Projects from "../../containers/Projects/Projects";
+import Games from "../../containers/Games/Games";
+import Blog from "../../containers/Blog/Blog";
+import Contact from "../../containers/Contact/Contact";
+import Footer from "../../containers/Footer/Footer";
 import "./Navbar.css";
-import MenuIcon from "@material-ui/icons/Menu";
-import CloseIcon from "@material-ui/icons/Close";
-import Footer from "../Footer/Footer";
-import Game from "../../containers/Game"
 
 const getDimensions = ele => {
   const { height } = ele.getBoundingClientRect();
@@ -76,7 +75,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main,
     height: 0,
     width: "100%",
-    position: "fixed",
+    position: "absolute",
     top: 0,
     left: 0,
     overflowX: "hidden",
@@ -86,6 +85,9 @@ const useStyles = makeStyles(theme => ({
     textAlign: "right",
     paddingRight: 20,
     paddingTop: 20
+  },
+  evenSection: {
+    backgroundColor: theme.palette.secondary.dark,
   }
 }));
 
@@ -97,15 +99,17 @@ function NavBar() {
   const homeRef = useRef(null);
   const aboutRef = useRef(null);
   const projectsRef = useRef(null);
+  const gamesRef = useRef(null);
   const blogRef = useRef(null);
   const contactRef = useRef(null);
 
   const sectionRefs = [
     { section: "home", ref: homeRef },
     { section: "about", ref: aboutRef },
+    { section: "projects", ref: projectsRef },
+    { section: "games", ref: gamesRef },
     { section: "blog", ref: blogRef },
-    { section: "contact", ref: contactRef },
-    { section: "projects", ref: projectsRef }
+    { section: "contact", ref: contactRef }
   ];
 
   useEffect(() => {
@@ -159,9 +163,8 @@ function NavBar() {
           <div className={classes.sectionDesktop}>
             <button
               type="button"
-              className={`header_link ${
-                visibleSection === "home" ? "selected" : ""
-              }`}
+              className={`header_link ${visibleSection === "home" ? "selected" : ""
+                }`}
               onClick={() => {
                 scrollTo(homeRef.current);
               }}
@@ -170,9 +173,8 @@ function NavBar() {
             </button>
             <button
               type="button"
-              className={`header_link ${
-                visibleSection === "about" ? "selected" : ""
-              }`}
+              className={`header_link ${visibleSection === "about" ? "selected" : ""
+                }`}
               onClick={() => {
                 scrollTo(aboutRef.current);
               }}
@@ -181,9 +183,8 @@ function NavBar() {
             </button>
             <button
               type="button"
-              className={`header_link ${
-                visibleSection === "projects" ? "selected" : ""
-              }`}
+              className={`header_link ${visibleSection === "projects" ? "selected" : ""
+                }`}
               onClick={() => {
                 scrollTo(projectsRef.current);
               }}
@@ -192,9 +193,18 @@ function NavBar() {
             </button>
             <button
               type="button"
-              className={`header_link ${
-                visibleSection === "blog" ? "selected" : ""
-              }`}
+              className={`header_link ${visibleSection === "games" ? "selected" : ""
+                }`}
+              onClick={() => {
+                scrollTo(gamesRef.current);
+              }}
+            >
+              <Typography variant="h6">GAMES</Typography>
+            </button>
+            <button
+              type="button"
+              className={`header_link ${visibleSection === "blog" ? "selected" : ""
+                }`}
               onClick={() => {
                 scrollTo(blogRef.current);
               }}
@@ -203,9 +213,8 @@ function NavBar() {
             </button>
             <button
               type="button"
-              className={`header_link ${
-                visibleSection === "contact" ? "selected" : ""
-              }`}
+              className={`header_link ${visibleSection === "contact" ? "selected" : ""
+                }`}
               onClick={() => {
                 scrollTo(contactRef.current);
               }}
@@ -214,15 +223,14 @@ function NavBar() {
             </button>
           </div>
           <div className={classes.sectionMobile}>
-            <MenuIcon onClick={() => openNav()} fontSize="large" />
+            <Menu onClick={() => openNav()} fontSize="large" />
             <div id="mySidenav" className={classes.sliderDiv}>
               <div className={classes.closebtn}>
-                <CloseIcon onClick={() => closeNav()} />
+                <Close onClick={() => closeNav()} />
               </div>
               <div
-                className={`header_link ${
-                  visibleSection === "home" ? "selected" : ""
-                }`}
+                className={`header_link ${visibleSection === "home" ? "selected" : ""
+                  }`}
                 onClick={() => {
                   scrollTo(homeRef.current);
                   closeNav();
@@ -232,9 +240,8 @@ function NavBar() {
               </div>
               <div
                 type="button"
-                className={`header_link ${
-                  visibleSection === "about" ? "selected" : ""
-                }`}
+                className={`header_link ${visibleSection === "about" ? "selected" : ""
+                  }`}
                 onClick={() => {
                   scrollTo(aboutRef.current);
                   closeNav();
@@ -243,9 +250,8 @@ function NavBar() {
                 <Typography variant="h6">ABOUT</Typography>
               </div>
               <div
-                className={`header_link ${
-                  visibleSection === "projects" ? "selected" : ""
-                }`}
+                className={`header_link ${visibleSection === "projects" ? "selected" : ""
+                  }`}
                 onClick={() => {
                   scrollTo(projectsRef.current);
                   closeNav();
@@ -254,9 +260,18 @@ function NavBar() {
                 <Typography variant="h6">PROJECTS</Typography>
               </div>
               <div
-                className={`header_link ${
-                  visibleSection === "blog" ? "selected" : ""
-                }`}
+                className={`header_link ${visibleSection === "games" ? "selected" : ""
+                  }`}
+                onClick={() => {
+                  scrollTo(gamesRef.current);
+                  closeNav();
+                }}
+              >
+                <Typography variant="h6">GAMES</Typography>
+              </div>
+              <div
+                className={`header_link ${visibleSection === "blog" ? "selected" : ""
+                  }`}
                 onClick={() => {
                   scrollTo(blogRef.current);
                   closeNav();
@@ -265,9 +280,8 @@ function NavBar() {
                 <Typography variant="h6">BLOG</Typography>
               </div>
               <div
-                className={`header_link ${
-                  visibleSection === "contact" ? "selected" : ""
-                }`}
+                className={`header_link ${visibleSection === "contact" ? "selected" : ""
+                  }`}
                 onClick={() => {
                   scrollTo(contactRef.current);
                   closeNav();
@@ -282,17 +296,19 @@ function NavBar() {
       <div id="about" ref={aboutRef}>
         <About />
       </div>
-      <div id="projects" ref={projectsRef}>
+      <div id="projects" ref={projectsRef} className={classes.evenSection} >
         <Projects />
       </div>
-      <div id="blog" ref={blogRef}>
+      <div id="games" ref={gamesRef}>
+        <Games />
+      </div>
+      <div id="blog" ref={blogRef} className={classes.evenSection}  >
         <Blog />
       </div>
       <div id="contact" ref={contactRef}>
         <Contact />
       </div>
       <Footer />
-      <Game boardSize={11} playerSize={25} />
     </>
   );
 }

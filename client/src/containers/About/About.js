@@ -141,7 +141,7 @@ function About() {
       <div>
         <Grid container spacing={1}>
           <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-            <div data-aos="fade-right">
+            <div data-aos="fade-right" data-aos-once="true">
               <img
                 src={MyPic}
                 className={classes.imgDiv}
@@ -163,7 +163,11 @@ function About() {
             </div>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-            <div className={classes.skillsSection} data-aos="fade-left">
+            <div
+              className={classes.skillsSection}
+              data-aos="fade-left"
+              data-aos-once="true"
+            >
               <ProgressBar name="Python" percentage="80%" />
               <ProgressBar name="Javascript" percentage="65%" />
               <ProgressBar name="React" percentage="65%" />
