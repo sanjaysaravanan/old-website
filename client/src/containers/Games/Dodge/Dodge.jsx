@@ -5,7 +5,7 @@ import Player from "./Components/Player";
 import Enemy from "./Components/Enemy";
 import { UP, DOWN, LEFT, RIGHT } from "../../../helpers/constants";
 import { pluck } from "../../../helpers/utils";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Dialog, Button } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -155,12 +155,13 @@ const Dodge = props => {
 
   const updateTimeAndScore = () => {
     const { playerScore, baseScore } = state;
-
+    const updatedScore = playerScore + baseScore;
+    setTimeElapsed(timeElapsed + 1);
     setState({
       ...state,
-      playerScore: playerScore + baseScore
+      playerScore: updatedScore,
+      highScore: updatedScore > state.highScore ? updatedScore : state.highScore
     });
-    setTimeElapsed(timeElapsed + 1);
   };
 
   const incrementEnemySpeed = () => {
@@ -246,7 +247,7 @@ const Dodge = props => {
     });
   };
 
-  const resetGame = () => {
+  const resetGame = (start = true) => {
     const { boardSize, playerSize } = props;
     const { playerScore, highScore, globalHighScore } = state;
 
@@ -275,34 +276,63 @@ const Dodge = props => {
       globalHighScore
     });
     // restart game
-    startGame();
+    if (start) startGame();
+  };
+
+  const [open, setOpen] = useState(false);
+
+
+  const handleClickOpen = () => {
+    setOpen(true);
+    resetGame();
+  };
+  const handleClose = () => {
+    setOpen(false);
+    resetGame(false);
   };
 
   return (
-    <div className={classes.root}>
-      <GameInfo
-        playerScore={state.playerScore}
-        timeElapsed={timeElapsed}
-        highScore={state.highScore}
-        globalHighScore={state.globalHighScore}
-      />
-      <Board dimension={size.board * size.player}>
-        <Player
-          size={size.player}
-          position={playerPos}
-          handlePlayerMovement={handlePlayerMovement}
-        />
-        {enemies.map(enemy => (
-          <Enemy
-            key={enemy.key}
-            size={size.player}
-            info={enemy}
-            playerPosition={playerPos}
-            onCollide={handlePlayerCollision}
+    <>
+      <Button
+        color="primary"
+        variant="contained"
+        size="small"
+        onClick={handleClickOpen}
+      >
+        Play
+        </Button>
+      <Dialog
+        onClose={() => handleClose()}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      //   classes={{ paperScrollPaper: classes.gameSection }}
+      >
+        <div className={classes.root}>
+          <GameInfo
+            playerScore={state.playerScore}
+            timeElapsed={timeElapsed}
+            highScore={state.highScore}
+            globalHighScore={state.globalHighScore}
           />
-        ))}
-      </Board>
-    </div>
+          <Board dimension={size.board * size.player}>
+            <Player
+              size={size.player}
+              position={playerPos}
+              handlePlayerMovement={handlePlayerMovement}
+            />
+            {enemies.map(enemy => (
+              <Enemy
+                key={enemy.key}
+                size={size.player}
+                info={enemy}
+                playerPosition={playerPos}
+                onCollide={handlePlayerCollision}
+              />
+            ))}
+          </Board>
+        </div>
+      </Dialog>
+    </>
   );
 };
 
