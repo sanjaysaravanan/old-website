@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { makeStyles, Dialog, Button } from "@material-ui/core";
+import React from "react";
+import { makeStyles } from "@material-ui/core";
 import Dodge from "./Dodge/Dodge";
 
 const useStyles = makeStyles(theme => ({
@@ -21,15 +21,6 @@ const useStyles = makeStyles(theme => ({
 
 const Games = () => {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
     <div className={classes.root}>
       <div
@@ -54,27 +45,9 @@ const Games = () => {
         data-aos-delay="200"
         data-aos-once="true"
       >
-        {/* <Typography variant="h4" color="primary">
-                    COMING SOON
-                </Typography> */}
-        <Button
-          color="primary"
-          variant="contained"
-          size="small"
-          onClick={handleClickOpen}
-        >
-          Play
-        </Button>
-        <Dialog
-          onClose={() => handleClose()}
-          aria-labelledby="customized-dialog-title"
-          open={open}
-        //   classes={{ paperScrollPaper: classes.gameSection }}
-        >
-          <div style={{ width: "100%" }}>
-            <Dodge boardSize={11} playerSize={25} />
-          </div>
-        </Dialog>
+        <div style={{ width: "100%" }}>
+          <Dodge boardSize={11} playerSize={25} />
+        </div>
       </div>
     </div>
   );
