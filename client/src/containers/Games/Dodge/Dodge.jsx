@@ -7,11 +7,11 @@ import { UP, DOWN, LEFT, RIGHT } from "../../../helpers/constants";
 import { pluck } from "../../../helpers/utils";
 import { makeStyles, Dialog, Button } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    maxWidth: "600px"
-  }
+    maxWidth: "600px",
+  },
 }));
 
 const getDefaultState = ({ highScore = 0 }) => {
@@ -20,24 +20,24 @@ const getDefaultState = ({ highScore = 0 }) => {
     highScore,
     enemySpeed: 5,
     activeEnemies: 1,
-    baseScore: 10
+    baseScore: 10,
   };
 };
 
-const Dodge = props => {
+const Dodge = (props) => {
   const classes = useStyles();
   const { boardSize, playerSize } = props;
   const half = Math.floor(props.boardSize / 2) * props.playerSize;
   const [playerPos, setPlayerPos] = useState({
     top: half,
-    left: half
+    left: half,
   });
   const [enemies, setEnemies] = useState([]);
   const [enemyIndex, setEnemyIndex] = useState(0);
   const [size, setSize] = useState({
     board: boardSize,
     player: playerSize,
-    maxDim: boardSize * playerSize
+    maxDim: boardSize * playerSize,
   });
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [state, setState] = useState(
@@ -85,7 +85,7 @@ const Dodge = props => {
 
     return newEnemy;
   };
-  const handlePlayerMovement = dirObj => {
+  const handlePlayerMovement = (dirObj) => {
     const { top, left } = playerPos;
     const { player, maxDim } = size;
 
@@ -107,50 +107,50 @@ const Dodge = props => {
     }
     setPlayerPos({
       top: top + player * dirObj.top,
-      left: left + player * dirObj.left
+      left: left + player * dirObj.left,
     });
   };
 
   const handlePlayerCollision = () => {
-    resetGame();
+    resetGame(false);
   };
 
   const updateEnemyPositions = () => {
-    const {
-      enemySpeed
-    } = state;
+    const { enemySpeed } = state;
 
     const { player, maxDim } = size;
-    setEnemies(enemies
-      .filter(enemy => !enemy.remove)
-      .map(enemy => {
-        if (
-          enemy.top < 0 - player ||
-          enemy.top > maxDim + player ||
-          enemy.left < 0 - player ||
-          enemy.left > maxDim + player
-        ) {
-          enemy.remove = true;
+    setEnemies(
+      enemies
+        .filter((enemy) => !enemy.remove)
+        .map((enemy) => {
+          if (
+            enemy.top < 0 - player ||
+            enemy.top > maxDim + player ||
+            enemy.left < 0 - player ||
+            enemy.left > maxDim + player
+          ) {
+            enemy.remove = true;
+            return enemy;
+          }
+          // based on direction, increment the correct value (top / left)
+          // eslint-disable-next-line default-case
+          switch (enemy.dir) {
+            case UP:
+              enemy.top -= enemySpeed;
+              break;
+            case DOWN:
+              enemy.top += enemySpeed;
+              break;
+            case LEFT:
+              enemy.left -= enemySpeed;
+              break;
+            case RIGHT:
+              enemy.left += enemySpeed;
+              break;
+          }
           return enemy;
-        }
-        // based on direction, increment the correct value (top / left)
-        // eslint-disable-next-line default-case
-        switch (enemy.dir) {
-          case UP:
-            enemy.top -= enemySpeed;
-            break;
-          case DOWN:
-            enemy.top += enemySpeed;
-            break;
-          case LEFT:
-            enemy.left -= enemySpeed;
-            break;
-          case RIGHT:
-            enemy.left += enemySpeed;
-            break;
-        }
-        return enemy;
-      }));
+        })
+    );
   };
 
   const updateTimeAndScore = () => {
@@ -160,7 +160,8 @@ const Dodge = props => {
     setState({
       ...state,
       playerScore: updatedScore,
-      highScore: updatedScore > state.highScore ? updatedScore : state.highScore
+      highScore:
+        updatedScore > state.highScore ? updatedScore : state.highScore,
     });
   };
 
@@ -169,7 +170,7 @@ const Dodge = props => {
 
     setState({
       ...state,
-      enemySpeed: parseFloat((enemySpeed + 0.25).toFixed(2))
+      enemySpeed: parseFloat((enemySpeed + 0.25).toFixed(2)),
     });
   };
 
@@ -204,20 +205,20 @@ const Dodge = props => {
     updateGameRef.current = updateGame;
     updateEnemiesInPlayRef.current = updateEnemiesInPlay;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => { };
+    return () => {};
   });
 
   const updateEnemyPosRefMethod = () => {
-    updateEnemyPosRef.current()
-  }
+    updateEnemyPosRef.current();
+  };
 
   const updateGameRefMethod = () => {
-    updateGameRef.current()
-  }
+    updateGameRef.current();
+  };
 
   const updateEnemiesInPlayRefMethod = () => {
-    updateEnemiesInPlayRef.current()
-  }
+    updateEnemiesInPlayRef.current();
+  };
 
   const startGame = () => {
     let enemyInterval = setInterval(updateEnemyPosRefMethod, true * 50);
@@ -227,7 +228,6 @@ const Dodge = props => {
     let gameInterval = setInterval(updateEnemiesInPlayRefMethod, true * 250);
     setIntervalGame(gameInterval);
   };
-
 
   useEffect(() => {
     startGame();
@@ -243,7 +243,7 @@ const Dodge = props => {
   const incrementActiveEnemies = () => {
     setState({
       ...state,
-      activeEnemies: state.activeEnemies + 1
+      activeEnemies: state.activeEnemies + 1,
     });
   };
 
@@ -258,29 +258,36 @@ const Dodge = props => {
 
     setPlayerPos({
       top: half,
-      left: half
+      left: half,
     });
     setEnemies([]);
     setEnemyIndex(0);
     setSize({
       board: boardSize,
       player: playerSize,
-      maxDim: boardSize * playerSize
+      maxDim: boardSize * playerSize,
     });
     setTimeElapsed(0);
     // reset state
-    setState({
-      ...getDefaultState({ boardSize, playerSize, highScore }),
-      // persist debug state and high scores
-      highScore: playerScore > highScore ? playerScore : highScore,
-      globalHighScore
-    });
+    if (!start) {
+      setState({
+        ...getDefaultState({ boardSize, playerSize, highScore }),
+        // persist debug state and high scores
+        highScore: playerScore > highScore ? playerScore : highScore,
+        globalHighScore,
+      });
+    } else {
+      setState({
+        ...getDefaultState({ boardSize, playerSize, highScore }),
+        highScore: 0,
+        globalHighScore,
+      });
+    }
     // restart game
-    if (start) startGame();
+    startGame();
   };
 
   const [open, setOpen] = useState(false);
-
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -300,12 +307,12 @@ const Dodge = props => {
         onClick={handleClickOpen}
       >
         Play
-        </Button>
+      </Button>
       <Dialog
         onClose={() => handleClose()}
         aria-labelledby="customized-dialog-title"
         open={open}
-      //   classes={{ paperScrollPaper: classes.gameSection }}
+        //   classes={{ paperScrollPaper: classes.gameSection }}
       >
         <div className={classes.root}>
           <GameInfo
@@ -320,7 +327,7 @@ const Dodge = props => {
               position={playerPos}
               handlePlayerMovement={handlePlayerMovement}
             />
-            {enemies.map(enemy => (
+            {enemies.map((enemy) => (
               <Enemy
                 key={enemy.key}
                 size={size.player}
