@@ -269,6 +269,7 @@ const Dodge = (props) => {
     });
     setTimeElapsed(0);
     // reset state
+    // Check for start of the game
     if (!start) {
       setState({
         ...getDefaultState({ boardSize, playerSize, highScore }),
