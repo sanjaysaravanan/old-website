@@ -1,19 +1,31 @@
-import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
-const useStyles = makeStyles(theme => ({
+import React, { useState } from "react";
+import { makeStyles, Grid } from "@material-ui/core";
+import BlogComponent from "./BlogComponent";
+import currentProjects from "./config";
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     transition: ".3s",
     paddingTop: 100,
-    paddingBottom: 100
+    paddingBottom: 100,
   },
   comingSoon: {
-    paddingTop: "20px"
-  }
+    paddingTop: "20px",
+  },
+  hoverDiv: {
+    transition: ".3s",
+    background: "transparent",
+  },
+  disableDiv: {
+    opacity: 0.4,
+    transition: ".3s",
+    background: "transparent",
+  },
 }));
 
 function Blog() {
   const classes = useStyles();
+  const [currentBlog, setCurrentBlog] = useState(null);
   return (
     <div className={classes.root}>
       <div
@@ -38,9 +50,32 @@ function Blog() {
         data-aos-delay="200"
         data-aos-once="true"
       >
-        <Typography variant="h4" color="primary">
-          COMING SOON
-        </Typography>
+        <Grid container spacing={3} justify="center">
+          {currentProjects.map((item, i) => (
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={4}
+              lg={4}
+              xl={4}
+              key={item.name}
+              style={{ maxWidth: "324px" }}
+            >
+              <div
+                onMouseOver={() => setCurrentBlog(i)}
+                onMouseLeave={() => setCurrentBlog(null)}
+                className={
+                  currentBlog === i || currentBlog === null
+                    ? classes.hoverDiv
+                    : classes.disableDiv
+                }
+              >
+                <BlogComponent data={item} />
+              </div>
+            </Grid>
+          ))}
+        </Grid>
       </div>
     </div>
   );
