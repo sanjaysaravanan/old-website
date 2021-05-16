@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Typography, Box, makeStyles, useTheme } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   blogDiv: {
-    height: "300px",
     cursor: "pointer",
   },
   link: {
@@ -15,7 +14,7 @@ const BlogComponent = ({ data }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [hover, setHover] = useState(false);
-  const { mainImage, title, date, url } = data;
+  const { mainImage, title, date, description, url } = data;
 
   return (
     <a
@@ -61,6 +60,9 @@ const BlogComponent = ({ data }) => {
           mr={"80%"}
           bgcolor={"primary.main"}
         ></Box>
+        <Box height="60px" textAlign="start" >
+          <Typography variant="subtitle2" >{description}</Typography>
+        </Box>
       </div>
     </a>
   );

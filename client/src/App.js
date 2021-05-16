@@ -26,7 +26,7 @@ const theme = createMuiTheme({
     background: { default: "#f9fafb", main: "#d9d9d9" }
   },
   typography: {
-    fontFamily: ['"Segoe UI"'].join(",")
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif"
   }
 });
 
