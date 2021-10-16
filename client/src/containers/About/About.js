@@ -3,20 +3,20 @@ import { makeStyles, Grid, Link } from "@material-ui/core";
 import ProgressBar from "./ProgressBar/ProgressBar";
 import "./About.css";
 import MyPic from "../../assets/images/sanjay.jpg";
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     paddingTop: 100,
     paddingBottom: 50,
-    alignContent: "center"
+    alignContent: "center",
   },
   textHeaderDiv: {
     fontSize: "20pt",
     fontWeight: "bold",
     marginTop: 20,
     [theme.breakpoints.down("sm")]: {
-      fontSize: "15pt"
-    }
+      fontSize: "15pt",
+    },
   },
   textDiv: {
     fontSize: "12pt",
@@ -24,29 +24,29 @@ const useStyles = makeStyles(theme => ({
     margin: "0px 3%",
     [theme.breakpoints.down("sm")]: {
       fontSize: "12pt",
-      lineHeight: "12pt"
-    }
+      lineHeight: "12pt",
+    },
   },
   skillsSection: {
     marginBottom: 20,
     marginRight: "3%",
     marginLeft: "3%",
-    marginTop: 20
+    marginTop: 20,
   },
   imgDiv: {
     height: 230,
     width: 230,
-    borderRadius: "50%"
+    borderRadius: "50%",
   },
   companyLink: {
     color: theme.palette.primary.main,
     "&:hover": {
-      textDecoration: "none"
-    }
+      textDecoration: "none",
+    },
   },
   features: {
-    marginTop: 20
-  }
+    marginTop: 20,
+  },
 }));
 
 function About() {
@@ -149,15 +149,15 @@ function About() {
               />
               <div className={classes.textHeaderDiv}>Who's this guy?</div>
               <div className={classes.textDiv}>
-                I'm a Full-Stack Developer for{" "}
+                I'm a Software Developer for{" "}
                 <Link
-                  href="https://www.altimetrik.com"
+                  href="https://www.encora.com"
                   className={classes.companyLink}
                   target="_blank"
                 >
-                  Altimetrik
+                  Encora Inc
                 </Link>{" "}
-                in India, Chennai. I have serious passion for API development,
+                in India, Bengaluru. I have serious passion for API development,
                 UI, DevOps and Cloud services.
               </div>
             </div>
@@ -169,12 +169,12 @@ function About() {
               data-aos-once="true"
             >
               <ProgressBar name="Python" percentage="80%" />
-              <ProgressBar name="Javascript" percentage="65%" />
-              <ProgressBar name="React" percentage="65%" />
+              <ProgressBar name="Javascript" percentage="75%" />
+              <ProgressBar name="React" percentage="80%" />
               <ProgressBar name="Node.js" percentage="50%" />
               <ProgressBar name="Docker" percentage="80%" />
               <ProgressBar name="Jenkins" percentage="60%" />
-              <ProgressBar name="MongoDB" percentage="65%" />
+              <ProgressBar name="MongoDB" percentage="70%" />
               <ProgressBar name="Kubernetes" percentage="60%" />
               <ProgressBar name="AWS" percentage="50%" />
             </div>
